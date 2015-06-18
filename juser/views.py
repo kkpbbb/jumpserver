@@ -630,8 +630,8 @@ def user_add(request):
                                    #ldap_pwd=CRYPTOR.encrypt(ldap_pwd),
                                    is_active=is_active,
                                    date_joined=datetime.datetime.now())
-
-                server_add_user(username, password, ssh_key_pwd)
+                #使用freeipa结合utoken通过ssh public key登录jumpserver，不需要本地产生
+                #server_add_user(username, password, ssh_key_pwd)
                 if LDAP_ENABLE:
                     ldap_add_user(username, ldap_pwd)
                 mail_title = u'恭喜你的跳板机用户添加成功 Jumpserver'
@@ -641,9 +641,8 @@ def user_add(request):
                     您的部门: %s
                     您的角色： %s
                     您的web登录密码： %s
-                    您的ssh密钥文件密码： %s
-                    密钥下载地址： http://%s:%s/juser/down_key/?id=%s
-                    说明： 请登陆后再下载密钥！
+                    
+                    说明： 请登录后修改web登录密码为freeipa密码！
                 """ % (name, username, dept.name, user_role.get(role_post, ''),
                        password, ssh_key_pwd, SEND_IP, SEND_PORT, user.id)
 
@@ -698,11 +697,13 @@ def user_add_adm(request):
                                    name=name, email=email, dept=dept,
                                    groups=groups, role='CU',
                                    ssh_key_pwd=md5_crypt(ssh_key_pwd),
-                                   ldap_pwd=CRYPTOR.encrypt(ldap_pwd),
+                                   #为了使用freeipa登录，修改登录密码和web登录密码相同
+                                   ldap_pwd=CRYPTOR.encrypt(password),
+                                   #ldap_pwd=CRYPTOR.encrypt(ldap_pwd),         
                                    is_active=is_active,
                                    date_joined=datetime.datetime.now())
-
-                server_add_user(username, password, ssh_key_pwd)
+                #使用freeipa结合utoken通过ssh public key登录jumpserver，不需要本地产生
+                #server_add_user(username, password, ssh_key_pwd)
                 if LDAP_ENABLE:
                     ldap_add_user(username, ldap_pwd)
 
@@ -723,9 +724,7 @@ def user_add_adm(request):
                     您的部门: %s
                     您的角色： %s
                     您的web登录密码： %s
-                    您的ssh密钥文件密码： %s
-                    密钥下载地址： http://%s:%s/juser/down_key/?id=%s
-                    说明： 请登陆后再下载密钥！
+                    说明： 请登录后修改web登录密码为freeipa密码！
                 """ % (name, username, dept.name, '普通用户',
                        password, ssh_key_pwd, SEND_IP, SEND_PORT, user.id)
                 send_mail(mail_title, mail_msg, MAIL_FROM, [email], fail_silently=False)
@@ -827,7 +826,7 @@ def user_del(request):
     if user and user[0].username != 'admin':
         user = user[0]
         user.delete()
-        server_del_user(user.username)
+        #server_del_user(user.username)
         if LDAP_ENABLE:
             ldap_del_user(user.username)
     return HttpResponseRedirect('/juser/user_list/')
@@ -845,7 +844,7 @@ def user_del_ajax(request):
         if user and user[0].username != 'admin':
             user = user[0]
             user.delete()
-            server_del_user(user.username)
+            #server_del_user(user.username)
             if LDAP_ENABLE:
                 ldap_del_user(user.username)
 
@@ -953,7 +952,8 @@ def user_edit_adm(request):
                 user = user[0]
         else:
             return HttpResponseRedirect('/juser/user_list/')
-
+        #将ldap登录密码改为和web登录密码相同，实现通过freeipa认证
+        ldap_pwd=CRYPTOR.encrypt(password)
         if password != user.password:
             password = md5_crypt(password)
 
@@ -966,6 +966,7 @@ def user_edit_adm(request):
                        email=email,
                        groups=groups,
                        is_active=is_active,
+                       ldap_pwd=ldap_pwd,
                        ssh_key_pwd=ssh_key_pwd)
 
         return HttpResponseRedirect('/juser/user_list/')
@@ -1008,7 +1009,7 @@ def chg_info(request):
                 password = md5_crypt(password)
 
             if ssh_key_pwd != user.ssh_key_pwd:
-                gen_ssh_key(user.username, ssh_key_pwd)
+                #gen_ssh_key(user.username, ssh_key_pwd)
                 ssh_key_pwd = md5_crypt(ssh_key_pwd)
 
             user_set.update(name=name, password=password, ssh_key_pwd=ssh_key_pwd, email=email)
