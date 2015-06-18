@@ -650,7 +650,7 @@ def user_add(request):
                 error = u'添加用户 %s 失败 %s ' % (username, e)
                 try:
                     db_del_user(username)
-                    server_del_user(username)
+                    #server_del_user(username)
                     if LDAP_ENABLE:
                         ldap_del_user(username)
                 except Exception:
@@ -711,7 +711,7 @@ def user_add_adm(request):
                 error = u'添加用户 %s 失败 %s ' % (username, e)
                 try:
                     db_del_user(username)
-                    server_del_user(username)
+                    #server_del_user(username)
                     if LDAP_ENABLE:
                         ldap_del_user(username)
                 except Exception:
