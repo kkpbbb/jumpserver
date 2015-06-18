@@ -625,7 +625,9 @@ def user_add(request):
                                    name=name, email=email, dept=dept,
                                    groups=groups, role=role_post,
                                    ssh_key_pwd=md5_crypt(ssh_key_pwd),
-                                   ldap_pwd=CRYPTOR.encrypt(ldap_pwd),
+                                   #为了使用freeipa登录，修改登录密码和web登录密码相同
+                                   ldap_pwd=CRYPTOR.encrypt(password),
+                                   #ldap_pwd=CRYPTOR.encrypt(ldap_pwd),
                                    is_active=is_active,
                                    date_joined=datetime.datetime.now())
 
@@ -890,12 +892,13 @@ def user_edit(request):
                 user = user[0]
         else:
             return HttpResponseRedirect('/juser/user_list/')
-
+        #将ldap登录密码改为和web登录密码相同，实现通过freeipa认证
+        ldap_pwd=CRYPTOR.encrypt(password)
         if password != user.password:
             password = md5_crypt(password)
-
+        #使用freeipa控制使用utoken，通过ssh public key登录jumpserver，所以不需要本地创建publickey登录
         if ssh_key_pwd != user.ssh_key_pwd:
-            gen_ssh_key(user.username, ssh_key_pwd)
+            #gen_ssh_key(user.username, ssh_key_pwd)
             ssh_key_pwd = CRYPTOR.encrypt(ssh_key_pwd)
 
         db_update_user(user_id=user_id,
@@ -906,6 +909,7 @@ def user_edit(request):
                        dept=dept,
                        role=role_post,
                        is_active=is_active,
+                       ldap_pwd=ldap_pwd,
                        ssh_key_pwd=ssh_key_pwd)
 
         return HttpResponseRedirect('/juser/user_list/')
