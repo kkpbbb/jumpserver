@@ -17,6 +17,9 @@ base_dir=/opt/jumpserver
 PROC_NAME="jumpsever"
 lockfile=/var/lock/subsys/${PROC_NAME}
 
+JUMP_PID=/var/run/subsys/${PROC_NAME}.pid
+LOG_PID=/var/run/subsys/${PROC_NAME}_log.pid
+NODE_PID=/var/run/subsys/${PROC_NAME}_node.pid
 
 start() {
 	jump_start=$"Starting ${PROC_NAME} service:"
@@ -25,10 +28,10 @@ start() {
 		 echo "jumpserver  is running..."
 		 success "$jump_start"
 	else
-		 daemon python $base_dir/manage.py runserver 0.0.0.0:80 &>> /tmp/jumpserver.log 2>&1 &
-		 daemon python $base_dir/log_handler.py &> /dev/null 2>&1 &
-         cd $base_dir/websocket/;daemon node index.js &> /dev/null 2>&1 &
-         sleep 2
+		 daemon python $base_dir/manage.py runserver 0.0.0.0:80 -p $JUMP_PID & >> $base_dir/jumpserver.log 2>&1 &
+		 daemon python $base_dir/log_handler.py -p $LOG_PID &> /dev/null 2>&1 &
+                 cd $base_dir/websocket/;daemon node index.js -p $NODE_PID  &> /dev/null 2>&1 &
+                 sleep 2
 
 		 echo -n "$jump_start"
 		 nums=0
@@ -62,7 +65,7 @@ stop() {
 		if [ $ret -eq 0 ]; then
 			echo_success
 			echo
-            rm -f "$lockfile"
+                        rm -f "$lockfile"
 		else
 			echo_failure
 			echo
@@ -84,6 +87,16 @@ restart(){
     start
 }
 
+status_fn() {
+  if [ -f $JUMP_PID ] && checkpid `cat $JUMP_PID` ; then
+    echo "jumpserver is running."
+    exit 0
+  else
+    echo "jumpserver is stopped."
+    exit 1
+  fi
+}
+
 # See how we were called.
 case "$1" in    
   start)                
@@ -96,9 +109,11 @@ case "$1" in
   restart)      
         restart         
         ;;              
-            
+  restart)      
+        status_fn         
+        ;;            
   *)                    
-        echo $"Usage: $0 {start|stop|restart}"
+        echo $"Usage: $0 {start|stop|restart|status}"
         exit 2          
 esac                    
                         
