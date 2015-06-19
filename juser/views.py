@@ -644,7 +644,7 @@ def user_add(request):
                     
                     说明： 请登录后修改web登录密码为freeipa密码！
                 """ % (name, username, dept.name, user_role.get(role_post, ''),
-                       password, ssh_key_pwd, SEND_IP, SEND_PORT, user.id)
+                       password)
 
             except Exception, e:
                 error = u'添加用户 %s 失败 %s ' % (username, e)
@@ -726,7 +726,7 @@ def user_add_adm(request):
                     您的web登录密码： %s
                     说明： 请登录后修改web登录密码为freeipa密码！
                 """ % (name, username, dept.name, '普通用户',
-                       password, ssh_key_pwd, SEND_IP, SEND_PORT, user.id)
+                       password)
                 send_mail(mail_title, mail_msg, MAIL_FROM, [email], fail_silently=False)
                 msg = u'添加用户 %s 成功！ 用户密码已发送到 %s 邮箱！' % (username, email)
 
