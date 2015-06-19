@@ -108,8 +108,9 @@ case "$1" in
 
   restart)      
         restart         
-        ;;              
-  restart)      
+        ;;
+        
+  status)      
         status_fn         
         ;;            
   *)                    
