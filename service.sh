@@ -41,9 +41,9 @@ start() {
 	
 
 	else
-		 daemon python $base_dir/manage.py runserver 0.0.0.0:80 & > $base_dir/jumpserver.log 2>&1 &
-		 daemon python $base_dir/log_handler.py  &> /dev/null 2>&1 &
-                 cd $base_dir/websocket/;daemon node index.js  &> /dev/null 2>&1 &
+		 daemon python $base_dir/manage.py runserver 0.0.0.0:80 &> $base_dir/jumpserver.log 2>&1 &
+		 daemon python $base_dir/log_handler.py &> /dev/null 2>&1 &
+                 cd $base_dir/websocket/;daemon node index.js &> /dev/null 2>&1 &
                  sleep 2
 
 		 echo -n "$jump_start"
