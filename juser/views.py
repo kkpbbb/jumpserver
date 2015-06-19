@@ -642,7 +642,7 @@ def user_add(request):
                     您的角色： %s
                     您的web登录密码： %s
                     
-                    说明： 请登录后修改web登录密码为freeipa密码！
+                    说明： 请登录后修改自己的FreeIPA密码！
                 """ % (name, username, dept.name, user_role.get(role_post, ''),
                        password)
 
@@ -724,7 +724,7 @@ def user_add_adm(request):
                     您的部门: %s
                     您的角色： %s
                     您的web登录密码： %s
-                    说明： 请登录后修改web登录密码为freeipa密码！
+                    说明： 请登录后修改自己的FreeIPA密码！
                 """ % (name, username, dept.name, '普通用户',
                        password)
                 send_mail(mail_title, mail_msg, MAIL_FROM, [email], fail_silently=False)
@@ -891,8 +891,8 @@ def user_edit(request):
                 user = user[0]
         else:
             return HttpResponseRedirect('/juser/user_list/')
-        #将ldap登录密码改为和web登录密码相同，实现通过freeipa认证
-        ldap_pwd=CRYPTOR.encrypt(password)
+        #将ldap登录密码改为和ssh_key_pwd密码，实现通过freeipa认证
+        ldap_pwd=CRYPTOR.encrypt(ssh_key_pwd)
         if password != user.password:
             password = md5_crypt(password)
         #使用freeipa控制使用utoken，通过ssh public key登录jumpserver，所以不需要本地创建publickey登录
@@ -952,8 +952,8 @@ def user_edit_adm(request):
                 user = user[0]
         else:
             return HttpResponseRedirect('/juser/user_list/')
-        #将ldap登录密码改为和web登录密码相同，实现通过freeipa认证
-        ldap_pwd=CRYPTOR.encrypt(password)
+        #将ldap登录密码改为ssh_key_pwd密码，实现通过freeipa认证
+        ldap_pwd=CRYPTOR.encrypt(ssh_key_pwd)
         if password != user.password:
             password = md5_crypt(password)
 
