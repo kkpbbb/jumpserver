@@ -26,11 +26,11 @@ start() {
 	
 	         nums=0
 		 
-                 for i in manage.py log_handler.py index.js;do
+                 for i in log_handler.py index.js;do
                    ps aux | grep "$i" | grep -v 'grep' &> /dev/null && let nums+=1 
                  done
 
-                 if [ "x$nums" == "x3" ];then
+                 if [ "x$nums" == "x2" ];then
                     success "$jump_start"
                     echo "jumpserver  is running..."
                  else
@@ -41,7 +41,7 @@ start() {
 	
 
 	else
-		 daemon python $base_dir/manage.py runserver 0.0.0.0:80 &> $base_dir/jumpserver.log 2>&1 &
+		 #daemon python $base_dir/manage.py runserver 0.0.0.0:80 &> $base_dir/jumpserver.log 2>&1 &
 		 daemon python $base_dir/log_handler.py &> /dev/null 2>&1 &
                  cd $base_dir/websocket/;daemon node index.js &> /dev/null 2>&1 &
                  sleep 2
@@ -49,11 +49,11 @@ start() {
 		 echo -n "$jump_start"
 		 nums=0
 		 
-                 for i in manage.py log_handler.py index.js;do
+                 for i in log_handler.py index.js;do
                    ps aux | grep "$i" | grep -v 'grep' &> /dev/null && let nums+=1 
                  done
 
-                 if [ "x$nums" == "x3" ];then
+                 if [ "x$nums" == "x2" ];then
                     success "$jump_start"
                     touch "$lockfile"
                     echo
@@ -73,7 +73,7 @@ stop() {
 	echo -n $"Stopping ${PROC_NAME} service:"
 	
 	if [ -e $lockfile ];then
-		ps aux | grep -E 'manage.py|log_handler.py|index.js' | grep -v grep | awk '{print $2}' | xargs kill -9 &> /dev/null
+		ps aux | grep -E 'log_handler.py|index.js' | grep -v grep | awk '{print $2}' | xargs kill -9 &> /dev/null
 		ret=$?
 		
 		if [ $ret -eq 0 ]; then
@@ -105,11 +105,11 @@ status_fn() {
 	
 	         nums=0
 		 
-                 for i in manage.py log_handler.py index.js;do
+                 for i in log_handler.py index.js;do
                    ps aux | grep "$i" | grep -v 'grep' &> /dev/null && let nums+=1 
                  done
 
-                 if [ "x$nums" == "x3" ];then
+                 if [ "x$nums" == "x2" ];then
                     echo "jumpserver  is running..."
                     exit 0
                  else
