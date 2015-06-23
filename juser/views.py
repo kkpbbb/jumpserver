@@ -625,9 +625,7 @@ def user_add(request):
                                    name=name, email=email, dept=dept,
                                    groups=groups, role=role_post,
                                    ssh_key_pwd=md5_crypt(ssh_key_pwd),
-                                   #为了使用freeipa登录，修改登录密码和web登录密码相同
-                                   ldap_pwd=CRYPTOR.encrypt(password),
-                                   #ldap_pwd=CRYPTOR.encrypt(ldap_pwd),
+                                   ldap_pwd=CRYPTOR.encrypt(ldap_pwd),
                                    is_active=is_active,
                                    date_joined=datetime.datetime.now())
                 #使用freeipa结合utoken通过ssh public key登录jumpserver，不需要本地产生
@@ -697,9 +695,7 @@ def user_add_adm(request):
                                    name=name, email=email, dept=dept,
                                    groups=groups, role='CU',
                                    ssh_key_pwd=md5_crypt(ssh_key_pwd),
-                                   #为了使用freeipa登录，修改登录密码和web登录密码相同
-                                   ldap_pwd=CRYPTOR.encrypt(password),
-                                   #ldap_pwd=CRYPTOR.encrypt(ldap_pwd),         
+                                   ldap_pwd=CRYPTOR.encrypt(ldap_pwd),         
                                    is_active=is_active,
                                    date_joined=datetime.datetime.now())
                 #使用freeipa结合utoken通过ssh public key登录jumpserver，不需要本地产生
@@ -891,8 +887,7 @@ def user_edit(request):
                 user = user[0]
         else:
             return HttpResponseRedirect('/juser/user_list/')
-        #将ldap登录密码改为和ssh_key_pwd密码，实现通过freeipa认证
-        ldap_pwd=CRYPTOR.encrypt(ssh_key_pwd)
+
         if password != user.password:
             password = md5_crypt(password)
         #使用freeipa控制使用utoken，通过ssh public key登录jumpserver，所以不需要本地创建publickey登录
@@ -908,7 +903,6 @@ def user_edit(request):
                        dept=dept,
                        role=role_post,
                        is_active=is_active,
-                       ldap_pwd=ldap_pwd,
                        ssh_key_pwd=ssh_key_pwd)
 
         return HttpResponseRedirect('/juser/user_list/')
@@ -952,8 +946,7 @@ def user_edit_adm(request):
                 user = user[0]
         else:
             return HttpResponseRedirect('/juser/user_list/')
-        #将ldap登录密码改为ssh_key_pwd密码，实现通过freeipa认证
-        ldap_pwd=CRYPTOR.encrypt(ssh_key_pwd)
+
         if password != user.password:
             password = md5_crypt(password)
 
@@ -966,7 +959,6 @@ def user_edit_adm(request):
                        email=email,
                        groups=groups,
                        is_active=is_active,
-                       ldap_pwd=ldap_pwd,
                        ssh_key_pwd=ssh_key_pwd)
 
         return HttpResponseRedirect('/juser/user_list/')
