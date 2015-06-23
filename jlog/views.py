@@ -101,7 +101,7 @@ def log_history(request):
         elif is_common_user(request):
             return httperror(request, '查看失败, 您无权查看!')
 
-        log_his = "%s.his" % log.log_path
+        log_his = "%s" % log.log_path
         if os.path.isfile(log_his):
             f = open(log_his)
             content = f.read()
