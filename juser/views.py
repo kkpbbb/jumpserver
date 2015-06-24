@@ -640,7 +640,7 @@ def user_add(request):
                     您的角色： %s
                     您的web登录密码： %s
                     
-                    说明： 请登录后修改自己的FreeIPA密码！
+                    说明： 请直接使用Utoken登录跳板主机，选择或者输入主机IP进行登录！
                 """ % (name, username, dept.name, user_role.get(role_post, ''),
                        password)
 
@@ -720,7 +720,7 @@ def user_add_adm(request):
                     您的部门: %s
                     您的角色： %s
                     您的web登录密码： %s
-                    说明： 请登录后修改自己的FreeIPA密码！
+                    说明： 请直接使用Utoken登录跳板主机，选择或者输入主机IP进行登录！
                 """ % (name, username, dept.name, '普通用户',
                        password)
                 send_mail(mail_title, mail_msg, MAIL_FROM, [email], fail_silently=False)
