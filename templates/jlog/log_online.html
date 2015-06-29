@@ -116,7 +116,7 @@
 </div>
 
 
-<script src="http://{{ web_socket_host }}/socket.io/socket.io.js"></script>
+<script src="https://{{ web_socket_host }}/socket.io/socket.io.js"></script>
 <script>
    $.fn.webSocket = function(opt){
     var st = {};
@@ -127,7 +127,7 @@
         return new Date().getTime()+""+Math.floor(Math.random()*899+100);
     };
     var init = function(e){
-        var socket = io.connect('ws://'+globalConfig.SOCKET_HOST);
+        var socket = io.connect('wss://'+globalConfig.SOCKET_HOST);
         var node = $(e.target);
         message.id = genUid();
         message.filename = node.attr('filename');
