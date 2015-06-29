@@ -1,9 +1,17 @@
+var fs = require("fs");
+
+var options = {
+   key: fs.readFileSync('/etc/pki/jumpserver.pem'),
+   cert: fs.readFileSync('/etc/pki/jumpserver.pem'),
+   ca: fs.readFileSync("/etc/pki/joyveb_ca.pem"),
+   rejectUnauthorized: false,
+};
+
 var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var https = require('https').Server(app);
+var io = require('socket.io')(https);
 var spawn = require('child_process').spawn;
 var request = require("request");
-var fs = require("fs");
 
 
 
@@ -25,7 +33,13 @@ io.on('connection', function(socket){
     //监听新用户加入
     socket.on('login', function(obj){
         request({
-            uri:"http://127.0.0.1/node_auth/",
+            uri:"https://127.0.0.1/node_auth/",
+            agentOptions: {
+                cert: fs.readFileSync('/etc/pki/joyveb_client.pem'),
+                key: fs.readFileSync('/etc/pki/joyveb_client.pem'),
+                ca: fs.readFileSync("/etc/pki/joyveb_ca.pem"),
+                rejectUnauthorized: false,
+            },            
             method:"POST",
             form:{
                 username:obj.username,
@@ -121,6 +135,7 @@ io.on('connection', function(socket){
 
 });
 
-http.listen(3000, function(){
-    console.log('listening on *:3000');
+
+https.listen(3043, function(){
+   console.log('https Express server started on port %s at %s', https.address().port, https.address().address);
 });
