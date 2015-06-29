@@ -8,7 +8,7 @@ var options = {
 };
 
 var app = require('express')();
-var https = require('https').Server(app);
+var https = require('https').Server(options,app);
 var io = require('socket.io')(https);
 var spawn = require('child_process').spawn;
 var request = require("request");
