@@ -77,7 +77,8 @@ def log_kill(request):
         if is_group_admin(request) and dept_name != deptname:
             return httperror(request, u'Kill失败, 您无权操作!')
         try:
-            os.kill(int(pid), 9)
+            #os.kill(int(pid), 9)
+            os.system("sudo kill -9 %s" % (pid, ))
         except OSError:
             pass
         Log.objects.filter(pid=pid).update(is_finished=1, end_time=datetime.datetime.now())
